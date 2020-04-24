@@ -1,0 +1,28 @@
+{
+  "name": "the-game-client",
+  "version": "1.0.0",
+  "description": "JavaScript example starter project",
+  "main": "index.html",
+  "scripts": {
+    "start": "parcel index.html --open",
+    "build": "parcel build index.html"
+  },
+  "dependencies": {
+    "paper": "^0.12.4",
+    "pixi.js": "^5.2.2"
+  },
+  "devDependencies": {
+    "@babel/core": "7.2.0",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "parcel-bundler": "^1.6.1"
+  },
+  "browserslist": [
+    "last 1 Chrome versions"
+  ],
+  "keywords": [
+    "javascript",
+    "starter"
+  ],
+  "author": "Alex Stanciu <alex@auth0.com>",
+  "license": "MIT"
+}

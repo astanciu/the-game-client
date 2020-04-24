@@ -6,8 +6,10 @@ export class Player {
     this.game = game;
     this.ctx = game.ctx;
     this.loc = new Vector(300, 150);
+    this.velocity = new Vector(0, 0);
+    this.acc = new Vector(0.5, 0.5);
+    this.topSpeed = 10;
     this.angle = 0;
-    this.velocity = 5;
     this.view = new PlayerView(this);
     this.moving = {
       up: false,
@@ -43,16 +45,41 @@ export class Player {
     if (key === 'd') this.moving.right = false;
   }
 
-  updatePosition() {
+  update() {
+    const acc = new Vector(0, 0);
+    const decell = new Vector(0, 0);
+    const accAmt = 1;
+    if (this.moving.up) acc.y = -accAmt;
+    if (this.moving.down) acc.y = accAmt;
+    if (this.moving.left) acc.x = -accAmt;
+    if (this.moving.right) acc.x = accAmt;
+
+    if (acc.x === 0 && acc.y === 0) {
+      if (this.velocity.x >= 0.5) {
+        decell.x = -1;
+      }
+      if (this.velocity.x <= -0.5) {
+        decell.x = 1;
+      }
+      if (this.velocity.y >= 0.5) {
+        decell.y = -1;
+      }
+      if (this.velocity.y <= -0.5) {
+        decell.y = 1;
+      }
+      this.velocity.add(decell);
+    }
+    this.velocity.cutoff(0.5);
+    this.velocity.add(acc);
+    this.velocity.limit(this.topSpeed);
+    this.loc.add(this.velocity);
+
     // if (this.moving.up) this.loc.y -= this.velocity;
     // if (this.moving.down) this.loc.y += this.velocity;
     // if (this.moving.left) this.loc.x -= this.velocity;
     // if (this.moving.right) this.loc.x += this.velocity;
+    // console.log(`acc: `, acc);
 
-    if (this.moving.up) this.loc.y -= this.velocity;
-    if (this.moving.down) this.loc.y += this.velocity;aw
-    if (this.moving.left) this.loc.x -= this.velocity;
-    if (this.moving.right) this.loc.x += this.velocity;
   }
 
   checkBounds() {
@@ -63,11 +90,11 @@ export class Player {
   }
 
   mouseMoved(mouseVector) {
-    this.angle = this.loc.angleTo(mouseVector)
+    this.angle = this.loc.angleTo(mouseVector);
   }
 
   tick() {
-    this.updatePosition();
+    this.update();
     this.checkBounds();
   }
 

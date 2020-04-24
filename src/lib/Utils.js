@@ -9,11 +9,26 @@ export class Vector {
   }
 
   add(v2) {
-    return new Vector(this.x + v2.x, this.y + v2.y);
+    this.x += v2.x;
+    this.y += v2.y;
+    return this;
+  }
+
+  sub(v2) {
+    this.x -= v2.x;
+    this.y -= v2.y;
   }
 
   mult(val) {
-    return new Vector(this.x * val, this.y * val);
+    this.x *= val;
+    this.y *= val;
+    return this;
+  }
+
+  div(val) {
+    this.x /= val;
+    this.y /= val;
+    return this;
   }
 
   getAngle() {
@@ -24,6 +39,8 @@ export class Vector {
     var magnitude = this.getMagnitude();
     this.x = Math.cos(angle) * magnitude;
     this.y = Math.sin(angle) * magnitude;
+
+    return this;
   }
 
   getMagnitude() {
@@ -33,5 +50,22 @@ export class Vector {
   angleTo(v2) {
     const d = this.distanceTo(v2);
     return d.getAngle();
+  }
+
+  magnitudeSq() {
+    return this.x * this.x + this.y * this.y;
+  }
+
+  limit(max) {
+    const mSq = this.magnitudeSq();
+    if (mSq > max * max) {
+      this.div(Math.sqrt(mSq)).mult(max);
+    }
+    return this;
+  }
+
+  cutoff(val) {
+    this.x = Math.abs(this.x) < val ? 0 : this.x;
+    this.y = Math.abs(this.y) < val ? 0 : this.y;
   }
 }

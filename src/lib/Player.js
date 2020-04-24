@@ -1,13 +1,13 @@
 import { PlayerView } from './PlayerView';
-import { Point } from './Utils';
+import { Vector } from './Utils';
 
 export class Player {
   constructor(game) {
     this.game = game;
     this.ctx = game.ctx;
-    this.loc = new Point(300, 150);
+    this.loc = new Vector(300, 150);
     this.angle = 0;
-    this.velocity = 8;
+    this.velocity = 5;
     this.view = new PlayerView(this);
     this.moving = {
       up: false,
@@ -44,8 +44,13 @@ export class Player {
   }
 
   updatePosition() {
+    // if (this.moving.up) this.loc.y -= this.velocity;
+    // if (this.moving.down) this.loc.y += this.velocity;
+    // if (this.moving.left) this.loc.x -= this.velocity;
+    // if (this.moving.right) this.loc.x += this.velocity;
+
     if (this.moving.up) this.loc.y -= this.velocity;
-    if (this.moving.down) this.loc.y += this.velocity;
+    if (this.moving.down) this.loc.y += this.velocity;aw
     if (this.moving.left) this.loc.x -= this.velocity;
     if (this.moving.right) this.loc.x += this.velocity;
   }
@@ -57,9 +62,8 @@ export class Player {
     if (this.loc.y >= this.game.height) this.loc.y = this.game.height;
   }
 
-  mouseMoved(mouseLoc) {
-    const dist = this.loc.distanceTo(mouseLoc);
-    this.angle = Math.atan2(dist.y, dist.x);
+  mouseMoved(mouseVector) {
+    this.angle = this.loc.angleTo(mouseVector)
   }
 
   tick() {

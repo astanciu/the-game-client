@@ -6,7 +6,7 @@ export class GameView {
     this.height = this.ctx.canvas.height / game.ratio;
 
     this.styles = {
-      backgroundColor: '#eebb2c',
+      backgroundColor: '#d4d4d4',
     };
   }
 

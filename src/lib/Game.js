@@ -1,6 +1,6 @@
 import { GameView } from './GameView';
 import { Player } from './Player';
-import { Point } from './Utils';
+import { Vector } from './Utils';
 export class Game {
   constructor(canvas) {
     this.canvas = canvas;
@@ -22,7 +22,7 @@ export class Game {
   }
 
   mouseMove(e) {
-    this.mouseLoc = new Point(e.clientX, e.clientY);
+    this.mouseLoc = new Vector(e.clientX, e.clientY);
     this.player.mouseMoved(this.mouseLoc);
   }
 

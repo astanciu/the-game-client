@@ -10,4 +10,5 @@ html {
 
 #canvas {
   position:absolute;
+  cursor: none;
 }

@@ -10,6 +10,7 @@ export class Game {
 
     this.view = new GameView(this);
     this.player = new Player(this);
+    this.mouse = new Vector(0, 0);
   }
 
   run() {
@@ -22,8 +23,8 @@ export class Game {
   }
 
   mouseMove(e) {
-    this.mouseLoc = new Vector(e.clientX, e.clientY);
-    this.player.mouseMoved(this.mouseLoc);
+    this.mouse.set(e.clientX, e.clientY);
+    this.player.mouseMoved(this.mouse);
   }
 
   drawLoop() {

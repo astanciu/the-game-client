@@ -4,6 +4,11 @@ export class Vector {
     this.y = y;
   }
 
+  set(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+
   distanceTo(v2) {
     return new Vector(v2.x - this.x, v2.y - this.y);
   }
@@ -36,14 +41,14 @@ export class Vector {
   }
 
   setAngle(angle) {
-    var magnitude = this.getMagnitude();
+    var magnitude = this.mag();
     this.x = Math.cos(angle) * magnitude;
     this.y = Math.sin(angle) * magnitude;
 
     return this;
   }
 
-  getMagnitude() {
+  mag() {
     return Math.sqrt(this.x * this.x + this.y * this.y);
   }
 
@@ -54,6 +59,12 @@ export class Vector {
 
   magnitudeSq() {
     return this.x * this.x + this.y * this.y;
+  }
+
+  norm() {
+    const len = this.mag();
+    if (len !== 0) this.mult(1 / len);
+    return this;
   }
 
   limit(max) {
@@ -67,5 +78,8 @@ export class Vector {
   cutoff(val) {
     this.x = Math.abs(this.x) < val ? 0 : this.x;
     this.y = Math.abs(this.y) < val ? 0 : this.y;
+  }
+  copy() {
+    return new Vector(this.x, this.y);
   }
 }

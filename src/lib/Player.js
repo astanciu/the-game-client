@@ -46,6 +46,8 @@ export class Player {
   }
 
   update() {
+    if (!this.mouse) return;
+    this.angle = this.loc.angleTo(this.mouse);
     const acc = new Vector(0, 0);
     const decell = new Vector(0, 0);
     const accAmt = 1;
@@ -90,6 +92,7 @@ export class Player {
   }
 
   mouseMoved(mouseVector) {
+    this.mouse = mouseVector;
     this.angle = this.loc.angleTo(mouseVector);
   }
 
@@ -99,6 +102,6 @@ export class Player {
   }
 
   draw() {
-    this.view.draw();
+    this.view.draw(this.game);
   }
 }

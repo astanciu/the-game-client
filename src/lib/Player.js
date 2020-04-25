@@ -5,6 +5,7 @@ export class Player {
   constructor(game) {
     this.game = game;
     this.ctx = game.ctx;
+    this.radius = 12;
     this.loc = new Vector(300, 150);
     this.velocity = new Vector(0, 0);
     this.acc = new Vector(0.5, 0.5);
@@ -21,28 +22,15 @@ export class Player {
   }
 
   setup() {
-    window.addEventListener('keydown', this.keydown.bind(this), false);
-    window.addEventListener('keyup', this.keyup.bind(this), false);
-  }
-  setdown() {
-    this.ctx.canvas.removeEventListener('keydown', this.keydown.bind(this));
-    this.ctx.canvas.removeEventListener('keyup', this.keyup.bind(this));
+    window.addEventListener('keydown', (ev) => this.onKey(ev, ev.key, true));
+    window.addEventListener('keyup', (ev) => this.onKey(ev, ev.key, false));
   }
 
-  keydown(e) {
-    const { key } = e;
-    if (key === 'w') this.moving.up = true;
-    if (key === 'a') this.moving.left = true;
-    if (key === 's') this.moving.down = true;
-    if (key === 'd') this.moving.right = true;
-  }
-
-  keyup(e) {
-    const { key } = e;
-    if (key === 'w') this.moving.up = false;
-    if (key === 'a') this.moving.left = false;
-    if (key === 's') this.moving.down = false;
-    if (key === 'd') this.moving.right = false;
+  onKey(ev, key, pressed) {
+    if (key === 'w') this.moving.up = pressed;
+    if (key === 'a') this.moving.left = pressed;
+    if (key === 's') this.moving.down = pressed;
+    if (key === 'd') this.moving.right = pressed;
   }
 
   update() {
@@ -81,14 +69,16 @@ export class Player {
     // if (this.moving.left) this.loc.x -= this.velocity;
     // if (this.moving.right) this.loc.x += this.velocity;
     // console.log(`acc: `, acc);
-
   }
 
   checkBounds() {
-    if (this.loc.x <= 0) this.loc.x = 0;
-    if (this.loc.x >= this.game.width) this.loc.x = this.game.width;
-    if (this.loc.y <= 0) this.loc.y = 0;
-    if (this.loc.y >= this.game.height) this.loc.y = this.game.height;
+    const offset = this.radius;
+    if (this.loc.x <= 0 + offset) this.loc.x = 0 + offset;
+    if (this.loc.x >= this.game.width - offset)
+      this.loc.x = this.game.width - offset;
+    if (this.loc.y <= offset) this.loc.y = offset;
+    if (this.loc.y >= this.game.height - offset)
+      this.loc.y = this.game.height - offset;
   }
 
   mouseMoved(mouseVector) {

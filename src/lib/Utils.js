@@ -83,3 +83,4 @@ export class Vector {
     return new Vector(this.x, this.y);
   }
 }
+window.Vector = Vector

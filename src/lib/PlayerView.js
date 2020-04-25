@@ -68,15 +68,18 @@ export class PlayerView {
   }
 
   draw(game) {
-    let radius = 10;
+    let radius = this.player.radius || 10;
     this.ctx.save();
     this.ctx.translate(this.player.loc.x, this.player.loc.y);
     this.ctx.rotate(this.player.angle);
 
     // Circle
-    this.ctx.fillStyle = this.style.color;
+    this.ctx.beginPath()
+    this.ctx.moveTo(0,0)
     this.ctx.arc(0, 0, radius, 0, 2 * Math.PI, false);
+    this.ctx.fillStyle = this.style.color;
     this.ctx.fill();
+    
 
     // // Line
     // this.ctx.lineWidth = 10;
@@ -87,6 +90,6 @@ export class PlayerView {
     // this.ctx.stroke();
 
     this.ctx.restore();
-    this.drawReticle(this.player.loc, game.mouse);
+    this.drawReticle(this.player.loc, game.world.mouse);
   }
 }

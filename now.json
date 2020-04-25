@@ -1,6 +1,6 @@
 {
   "name": "the-game-client",
   "github": {
-    "enabled": false
+    "enabled": true
   }
 }

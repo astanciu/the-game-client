@@ -1,0 +1,1 @@
+{"version":3,"sources":["style.css"],"names":[],"mappings":"AAAA,EACE,QAAS,CACT,SACF,CAEA,UAEE,WACF,CAEA,QACE,iBAAiB,CACjB,WACF","file":"src.a6b92c56.css","sourceRoot":"..","sourcesContent":["* {\n  margin: 0;\n  padding: 0;\n}\n\nbody,\nhtml {\n  height: 100%;\n}\n\n#canvas {\n  position:absolute;\n  cursor: none;\n}"]}

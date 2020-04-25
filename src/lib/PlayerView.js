@@ -4,7 +4,7 @@ export class PlayerView {
     this.ctx = player.ctx;
     this.style = {
       color: '#616a74',
-      highlight: 'blue',
+      highlight: 'red',
     };
   }
 

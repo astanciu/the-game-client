@@ -51,9 +51,8 @@ export class Game {
         { a: { x: 750, y: 190 }, b: { x: 860, y: 70 } },
         { a: { x: 860, y: 70 }, b: { x: 1070, y: 144 } },
         { a: { x: 1070, y: 144 }, b: { x: 1000, y: 310 } },
-        { a: { x: 1000, y: 310 }, b: { x: 840, y: 270  } },
-        { a: { x: 840, y: 270 }, b: { x: 750, y: 190  } },
- 
+        { a: { x: 1000, y: 310 }, b: { x: 840, y: 270 } },
+        { a: { x: 840, y: 270 }, b: { x: 750, y: 190 } },
 
         // // Polygon #6
         { a: { x: 400, y: 95 }, b: { x: 580, y: 50 } },
@@ -81,7 +80,6 @@ export class Game {
   mouseMove(e) {
     this.world.mouse.set(e.clientX, e.clientY);
     this.world.player.mouseMoved(this.world.mouse);
-   
   }
 
   drawLoop() {

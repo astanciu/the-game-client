@@ -7,41 +7,27 @@ export class GameView {
     this.height = this.ctx.canvas.height / game.ratio;
 
     this.styles = {
-      backgroundColor:  '#222 ', //'#d4d4d4',
-      light: 'yellow',
+      backgroundColor: '#32373d ',
+      light: '#d4d4d4',
     };
   }
 
   draw() {
     this.drawBackground();
-
-    // Method 2
-    this.drawSegments();
+    // this.drawBoxes();
+    this.drawLight(false);
+    // this.drawLightPoints();
   }
 
-  drawSegments() {
-    // Draw the boxes
-    // this.ctx.strokeStyle =  '#999';
-    // for (var i = 0; i < this.world.segments.length; i++) {
-    //   var seg = this.world.segments[i];
-    //   this.ctx.beginPath();
-    //   this.ctx.moveTo(seg.a.x, seg.a.y);
-    //   this.ctx.lineTo(seg.b.x, seg.b.y);
-    //   this.ctx.stroke();
-    // }
-
-    
-    // Draw light shadows
-    // for (var i = 1; i < this.world.visibility.length; i++) {
-    //   this.drawPolygon(this.world.visibility[i], 'rgba(255,255,255,0.2)');
-    // }
-
-    //  Draw the light
-    this.drawPolygon(this.world.visibility[0], '#aaa');
+  drawBoxes() {
+    for (var i = 1; i < this.world.visibility.length; i++) {
+      this.drawPolygon(this.world.visibility[i], 'rgba(255,255,255,0.2)');
+    }
   }
 
-  drawPolygon(polygon, fillStyle) {
-    //this.ctx.fillStyle = fillStyle;
+  drawLight(stroke = false) {
+    const polygon = this.world.visibility[0];
+
     this.ctx.beginPath();
     this.ctx.moveTo(polygon[0].x, polygon[0].y);
     for (var i = 1; i < polygon.length; i++) {
@@ -49,8 +35,26 @@ export class GameView {
       this.ctx.lineTo(intersect.x, intersect.y);
     }
     this.ctx.closePath();
-    this.ctx.fillStyle = fillStyle; //this.styles.light;
-    this.ctx.fill();
+    if (stroke) {
+      this.ctx.strokeStyle = this.styles.light;
+      this.ctx.stroke();
+    } else {
+      this.ctx.fillStyle = this.styles.light;
+      this.ctx.fill();
+    }
+  }
+
+  drawLightPoints() {
+    const r = 10;
+    const polygon = this.world.visibility[0];
+    this.ctx.beginPath();
+    for (var i = 0; i < polygon.length; i++) {
+      const point = polygon[i];
+      this.ctx.moveTo(point.x + r, point.y);
+      this.ctx.arc(point.x, point.y, r, 0, 2 * Math.PI, false);
+    }
+    this.ctx.strokeStyle = 'red';
+    this.ctx.stroke();
   }
 
   drawBackground() {

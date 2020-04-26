@@ -37,7 +37,11 @@ export class Vector {
   }
 
   getAngle() {
-    return Math.atan2(this.y, this.x);
+    let rad = Math.atan2(this.y, this.x);
+    if (rad < 0) {
+      rad += 2 * Math.PI;
+    }
+    return rad;
   }
 
   setAngle(angle) {
@@ -83,4 +87,4 @@ export class Vector {
     return new Vector(this.x, this.y);
   }
 }
-window.Vector = Vector
+window.Vector = Vector;

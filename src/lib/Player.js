@@ -6,7 +6,7 @@ export class Player {
     this.game = game;
     this.ctx = game.ctx;
     this.radius = 12;
-    this.loc = new Vector(300, 150);
+    this.loc = new Vector(400, 150);
     this.velocity = new Vector(0, 0);
     this.acc = new Vector(0.5, 0.5);
     this.topSpeed = 10;
@@ -63,12 +63,6 @@ export class Player {
     this.velocity.add(acc);
     this.velocity.limit(this.topSpeed);
     this.loc.add(this.velocity);
-
-    // if (this.moving.up) this.loc.y -= this.velocity;
-    // if (this.moving.down) this.loc.y += this.velocity;
-    // if (this.moving.left) this.loc.x -= this.velocity;
-    // if (this.moving.right) this.loc.x += this.velocity;
-    // console.log(`acc: `, acc);
   }
 
   checkBounds() {

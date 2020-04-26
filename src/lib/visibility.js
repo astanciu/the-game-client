@@ -1,12 +1,12 @@
-// Find intersection of RAY & SEGMENT
+// Code here was inspired by https://www.redblobgames.com/articles/visibility/
+// and parts were originally written by https://ncase.me/sight-and-light/
+
 function getIntersection(ray, segment) {
-  // RAY in parametric: Point + Delta*T1
   var r_px = ray.a.x;
   var r_py = ray.a.y;
   var r_dx = ray.b.x - ray.a.x;
   var r_dy = ray.b.y - ray.a.y;
 
-  // SEGMENT in parametric: Point + Delta*T2
   var s_px = segment.a.x;
   var s_py = segment.a.y;
   var s_dx = segment.b.x - segment.a.x;
@@ -21,10 +21,6 @@ function getIntersection(ray, segment) {
   }
 
   // SOLVE FOR T1 & T2
-  // r_px+r_dx*T1 = s_px+s_dx*T2 && r_py+r_dy*T1 = s_py+s_dy*T2
-  // ==> T1 = (s_px+s_dx*T2-r_px)/r_dx = (s_py+s_dy*T2-r_py)/r_dy
-  // ==> s_px*r_dy + s_dx*T2*r_dy - r_px*r_dy = s_py*r_dx + s_dy*T2*r_dx - r_py*r_dx
-  // ==> T2 = (r_dx*(s_py-r_py) + r_dy*(r_px-s_px))/(s_dx*r_dy - s_dy*r_dx)
   var T2 =
     (r_dx * (s_py - r_py) + r_dy * (r_px - s_px)) / (s_dx * r_dy - s_dy * r_dx);
   var T1 = (s_px + s_dx * T2 - r_px) / r_dx;
@@ -41,7 +37,36 @@ function getIntersection(ray, segment) {
   };
 }
 
-function getSightPolygon(sightX, sightY, segs) {
+function getClosesIntersection(angle, { x, y }, segs) {
+  // Calculate dx & dy from angle
+  var dx = Math.cos(angle);
+  var dy = Math.sin(angle);
+
+  // Ray from center of screen to mouse
+  var ray = {
+    a: { x, y },
+    b: { x: x + dx, y: y + dy },
+  };
+
+  // Find CLOSEST intersection
+  var closestIntersect = null;
+  for (var i = 0; i < segs.length; i++) {
+    var intersect = getIntersection(ray, segs[i]);
+    if (!intersect) continue;
+    if (!closestIntersect || intersect.param < closestIntersect.param) {
+      closestIntersect = intersect;
+    }
+  }
+
+  return closestIntersect;
+}
+
+function getSightPolygon(playerX, playerY, segs, playerAngle) {
+  let a1 = playerAngle - 0.5;
+  let a2 = playerAngle + 0.5;
+
+  const p1 = new Vector(playerX * Math.cos(a1), playerY * Math.sin(a1));
+  const p2 = new Vector(playerX * Math.cos(a2), playerY * Math.sin(a2));
   // Get all unique points
   var points = (function (segments) {
     var a = [];
@@ -50,6 +75,9 @@ function getSightPolygon(sightX, sightY, segs) {
     });
     return a;
   })(segs);
+
+  points.push(p1, p2);
+
   var uniquePoints = (function (points) {
     var set = {};
     return points.filter(function (p) {
@@ -67,35 +95,23 @@ function getSightPolygon(sightX, sightY, segs) {
   var uniqueAngles = [];
   for (var j = 0; j < uniquePoints.length; j++) {
     var uniquePoint = uniquePoints[j];
-    var angle = Math.atan2(uniquePoint.y - sightY, uniquePoint.x - sightX);
+    var angle = Math.atan2(uniquePoint.y - playerY, uniquePoint.x - playerX);
+    if (angle < 0) {
+      angle += 2 * Math.PI;
+    }
+
     uniquePoint.angle = angle;
     uniqueAngles.push(angle - 0.00001, angle, angle + 0.00001);
   }
 
-  // RAYS IN ALL DIRECTIONS
   var intersects = [];
   for (var j = 0; j < uniqueAngles.length; j++) {
-    var angle = uniqueAngles[j];
-
-    // Calculate dx & dy from angle
-    var dx = Math.cos(angle);
-    var dy = Math.sin(angle);
-
-    // Ray from center of screen to mouse
-    var ray = {
-      a: { x: sightX, y: sightY },
-      b: { x: sightX + dx, y: sightY + dy },
-    };
-
-    // Find CLOSEST intersection
-    var closestIntersect = null;
-    for (var i = 0; i < segs.length; i++) {
-      var intersect = getIntersection(ray, segs[i]);
-      if (!intersect) continue;
-      if (!closestIntersect || intersect.param < closestIntersect.param) {
-        closestIntersect = intersect;
-      }
-    }
+    const angle = uniqueAngles[j];
+    const closestIntersect = getClosesIntersection(
+      angle,
+      { x: playerX, y: playerY },
+      segs
+    );
 
     // Intersect angle
     if (!closestIntersect) continue;
@@ -105,30 +121,32 @@ function getSightPolygon(sightX, sightY, segs) {
     intersects.push(closestIntersect);
   }
 
+  intersects = intersects.filter((p) => {
+    if (p.angle >= a1 && p.angle <= a2) return true;
+  });
+
   // Sort intersects by angle
   intersects = intersects.sort(function (a, b) {
     return a.angle - b.angle;
   });
+  const left = getClosesIntersection(a1, { x: playerX, y: playerY }, segs);
+  const right = getClosesIntersection(a2, { x: playerX, y: playerY }, segs);
+  const center = { x: playerX, y: playerY };
+  intersects = [center, left, ...intersects, right];
 
-  // Polygon is intersects, in order of angle
   return intersects;
 }
 
 export const getVisibility = (world) => {
-  
   const { loc } = world.player;
   const segments = world.segments;
   var fuzzyRadius = 10;
-  var polygons = [getSightPolygon(loc.x, loc.y, segments)];
-  
-  const playerAngle = world.player.angle;
-  // const startAngle = 0 ;
-  // const endAngle = Math.PI * 2;
-  // for (var angle = startAngle; angle < endAngle; angle += (Math.PI * 2) / 10) {
-  //   var dx = Math.cos(angle) * fuzzyRadius;
-  //   var dy = Math.sin(angle) * fuzzyRadius;
-  //   polygons.push(getSightPolygon(loc.x + dx, loc.y + dy, segments));
-  // }
+
+  var angle = world.player.angle;
+  var polygons = [
+    // getSightPolygon(loc.x + dx, loc.y + dy, segments),
+    getSightPolygon(loc.x, loc.y, segments, angle),
+  ];
 
   return polygons;
 };

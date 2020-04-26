@@ -21,8 +21,7 @@ function getIntersection(ray, segment) {
   }
 
   // SOLVE FOR T1 & T2
-  var T2 =
-    (r_dx * (s_py - r_py) + r_dy * (r_px - s_px)) / (s_dx * r_dy - s_dy * r_dx);
+  var T2 = (r_dx * (s_py - r_py) + r_dy * (r_px - s_px)) / (s_dx * r_dy - s_dy * r_dx);
   var T1 = (s_px + s_dx * T2 - r_px) / r_dx;
 
   // Must be within parametic whatevers for RAY/SEGMENT
@@ -33,7 +32,7 @@ function getIntersection(ray, segment) {
   return {
     x: r_px + r_dx * T1,
     y: r_py + r_dy * T1,
-    param: T1,
+    param: T1
   };
 }
 
@@ -45,7 +44,7 @@ function getClosesIntersection(angle, { x, y }, segs) {
   // Ray from center of screen to mouse
   var ray = {
     a: { x, y },
-    b: { x: x + dx, y: y + dy },
+    b: { x: x + dx, y: y + dy }
   };
 
   // Find CLOSEST intersection
@@ -65,12 +64,16 @@ function getSightPolygon(playerX, playerY, segs, playerAngle) {
   let a1 = playerAngle - 0.5;
   let a2 = playerAngle + 0.5;
 
+  if (a1 < 0) a1 = Math.PI - a1;
+  if (a2 > 2 * Math.PI) a2 = a2 - 2 * Math.PI;
+  // console.log(`a1: ${a1} ---- mouse: ${playerAngle} ----- a2:${a2}`);
+
   const p1 = new Vector(playerX * Math.cos(a1), playerY * Math.sin(a1));
   const p2 = new Vector(playerX * Math.cos(a2), playerY * Math.sin(a2));
   // Get all unique points
-  var points = (function (segments) {
+  var points = (function(segments) {
     var a = [];
-    segments.forEach(function (seg) {
+    segments.forEach(function(seg) {
       a.push(seg.a, seg.b);
     });
     return a;
@@ -78,9 +81,9 @@ function getSightPolygon(playerX, playerY, segs, playerAngle) {
 
   points.push(p1, p2);
 
-  var uniquePoints = (function (points) {
+  var uniquePoints = (function(points) {
     var set = {};
-    return points.filter(function (p) {
+    return points.filter(function(p) {
       var key = p.x + ',' + p.y;
       if (key in set) {
         return false;
@@ -107,11 +110,7 @@ function getSightPolygon(playerX, playerY, segs, playerAngle) {
   var intersects = [];
   for (var j = 0; j < uniqueAngles.length; j++) {
     const angle = uniqueAngles[j];
-    const closestIntersect = getClosesIntersection(
-      angle,
-      { x: playerX, y: playerY },
-      segs
-    );
+    const closestIntersect = getClosesIntersection(angle, { x: playerX, y: playerY }, segs);
 
     // Intersect angle
     if (!closestIntersect) continue;
@@ -121,17 +120,17 @@ function getSightPolygon(playerX, playerY, segs, playerAngle) {
     intersects.push(closestIntersect);
   }
 
+  // Sort intersects by angle
+  intersects = intersects.sort(function(a, b) {
+    return a.angle - b.angle;
+  });
+
   intersects = intersects.filter((p) => {
     if (a2 > a1) {
       return p.angle >= a1 && p.angle <= a2;
     } else {
       return p.angle >= a1 || p.angle <= a2;
     }
-  });
-
-  // Sort intersects by angle
-  intersects = intersects.sort(function (a, b) {
-    return a.angle - b.angle;
   });
 
   // if (a2 < a1) {
@@ -156,7 +155,7 @@ export const getVisibility = (world) => {
   var angle = world.player.angle;
   var polygons = [
     // getSightPolygon(loc.x + dx, loc.y + dy, segments),
-    getSightPolygon(loc.x, loc.y, segments, angle),
+    getSightPolygon(loc.x, loc.y, segments, angle)
   ];
 
   return polygons;

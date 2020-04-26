@@ -122,13 +122,24 @@ function getSightPolygon(playerX, playerY, segs, playerAngle) {
   }
 
   intersects = intersects.filter((p) => {
-    if (p.angle >= a1 && p.angle <= a2) return true;
+    if (a2 > a1) {
+      return p.angle >= a1 && p.angle <= a2;
+    } else {
+      return p.angle >= a1 || p.angle <= a2;
+    }
   });
 
   // Sort intersects by angle
   intersects = intersects.sort(function (a, b) {
     return a.angle - b.angle;
   });
+
+  // if (a2 < a1) {
+  //   const h1 = intersects.filter((p) => p.angle <= a1);
+  //   const h2 = intersects.filter((p) => p.angle > a1);
+  //   intersects = [...h2, ...h1];
+  // }
+
   const left = getClosesIntersection(a1, { x: playerX, y: playerY }, segs);
   const right = getClosesIntersection(a2, { x: playerX, y: playerY }, segs);
   const center = { x: playerX, y: playerY };

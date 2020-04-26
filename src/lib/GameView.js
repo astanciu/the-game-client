@@ -14,9 +14,9 @@ export class GameView {
 
   draw() {
     this.drawBackground();
-    // this.drawBoxes();
+    this.drawBoxes();
     this.drawLight(false);
-    // this.drawLightPoints();
+    this.drawLightPoints();
   }
 
   drawBoxes() {

@@ -9,20 +9,27 @@ export class GameView {
     this.styles = {
       backgroundColor: '#32373d ',
       light: '#d4d4d4',
+      fuzz: 'rgba(255,255,255,0.2)',
     };
   }
 
   draw() {
     this.drawBackground();
-    // this.drawBoxes();
     this.drawLight(false);
+    this.drawLightFuzz(false);
+    this.game.drawRocks && this.drawRocks();
     // this.drawLightPoints();
   }
 
-  drawBoxes() {
-    for (var i = 1; i < this.world.visibility.length; i++) {
-      this.drawPolygon(this.world.visibility[i], 'rgba(255,255,255,0.2)');
-    }
+  drawRocks() {
+    this.world.shapes.forEach((rock) => {
+      // rock.hitbox.render(this.ctx)
+      this.drawPolygon(rock);
+    });
+  }
+
+  drawPolygon(rock) {
+    rock.shape.renderStroke(this.ctx, '#ffffff33');
   }
 
   drawLight(stroke = false) {
@@ -42,10 +49,29 @@ export class GameView {
       this.ctx.fillStyle = this.styles.light;
       this.ctx.fill();
     }
+    this.ctx.closePath();
+  }
+
+  drawLightFuzz(stroke = false) {
+    // console.log(this.world.visibility.length);
+    for (var i = 1; i < this.world.visibility.length; i++) {
+      this.drawPoly(this.world.visibility[i]);
+    }
+  }
+
+  drawPoly(polygon) {
+    this.ctx.fillStyle = this.styles.fuzz;
+    this.ctx.beginPath();
+    this.ctx.moveTo(polygon[0].x, polygon[0].y);
+    for (var i = 1; i < polygon.length; i++) {
+      var intersect = polygon[i];
+      this.ctx.lineTo(intersect.x, intersect.y);
+    }
+    this.ctx.fill();
   }
 
   drawLightPoints() {
-    const r = 10;
+    const r = 2;
     const polygon = this.world.visibility[0];
     this.ctx.beginPath();
     for (var i = 0; i < polygon.length; i++) {

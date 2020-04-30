@@ -1,7 +1,8 @@
+import { Vector2 } from './gamelib/math/Vector2';
+import { Polygon } from './gamelib/util2d';
+import { Rock } from './GameObject';
 import { GameView } from './GameView';
-import { Block, Room } from './Geometry';
 import { Player } from './Player';
-import { Vector } from './Utils';
 // import { loadMap } from './vis/loadmap';
 // import { calculateVisibility } from './vis/visibility';
 import { getVisibility } from './visibility';
@@ -12,60 +13,53 @@ export class Game {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
     this.ctx = this.getCtx();
-
     this.world = {
       player: new Player(this),
-      mouse: new Vector(0, 0),
-      room: new Room(0, 0, this.width, this.height),
-      blocks: [
-        new Block(150, 150, 150, 150),
-        new Block(500, 150, 150, 150),
-        new Block(800, 150, 150, 150),
-      ],
-      segments: [
-        // Border
-        { a: { x: 0, y: 0 }, b: { x: this.width, y: 0 } },
-        {
-          a: { x: this.width, y: 0 },
-          b: { x: this.width, y: this.height },
-        },
-        {
-          a: { x: this.width, y: this.height },
-          b: { x: 0, y: this.height },
-        },
-        { a: { x: 0, y: this.height }, b: { x: 0, y: 0 } },
+      mouse: new Vector2(0, 0),
+      room: new Polygon([
+        new Vector2(0, 0),
+        new Vector2(this.width, 0),
+        new Vector2(this.width, this.height),
+        new Vector2(0, this.height),
+      ]),
 
-        // Polygon #1
-        { a: { x: 100, y: 150 }, b: { x: 120, y: 50 } },
-        { a: { x: 120, y: 50 }, b: { x: 200, y: 80 } },
-        { a: { x: 200, y: 80 }, b: { x: 140, y: 210 } },
-        { a: { x: 140, y: 210 }, b: { x: 100, y: 150 } },
-
-        // Polygon #3
-        { a: { x: 200, y: 360 }, b: { x: 220, y: 250 } },
-        { a: { x: 220, y: 250 }, b: { x: 300, y: 300 } },
-        { a: { x: 300, y: 300 }, b: { x: 350, y: 420 } },
-        { a: { x: 350, y: 420 }, b: { x: 200, y: 360 } },
-
-        // // Polygon #5
-        { a: { x: 750, y: 190 }, b: { x: 860, y: 70 } },
-        { a: { x: 860, y: 70 }, b: { x: 1070, y: 144 } },
-        { a: { x: 1070, y: 144 }, b: { x: 1000, y: 310 } },
-        { a: { x: 1000, y: 310 }, b: { x: 840, y: 270 } },
-        { a: { x: 840, y: 270 }, b: { x: 750, y: 190 } },
-
-        // // Polygon #6
-        { a: { x: 400, y: 95 }, b: { x: 580, y: 50 } },
-        { a: { x: 580, y: 50 }, b: { x: 480, y: 150 } },
-        { a: { x: 480, y: 150 }, b: { x: 400, y: 95 } },
-
-        { a: { x: 570, y: 350 }, b: { x: 750, y: 420 } },
-        { a: { x: 750, y: 420 }, b: { x: 640, y: 470 } },
-        { a: { x: 640, y: 470 }, b: { x: 570, y: 350 } },
+      shapes: [
+        new Rock(
+          new Vector2(460, 260),
+          new Vector2(610, 200),
+          new Vector2(740, 300),
+          new Vector2(580, 420),
+          new Vector2(390, 400)
+        ),
+        new Rock(
+          new Vector2(190, 60),
+          new Vector2(290, 80),
+          new Vector2(310, 170),
+          new Vector2(190, 250),
+          new Vector2(120, 190)
+        ),
+        new Rock(
+          new Vector2(170, 440),
+          new Vector2(230, 470),
+          new Vector2(290, 530),
+          new Vector2(180, 560)
+        ),
+        new Rock(
+          new Vector2(940, 60),
+          new Vector2(1040, 60),
+          new Vector2(1040, 160),
+          new Vector2(940, 160)
+        ),
+        new Rock(
+          new Vector2(960, 350),
+          new Vector2(960, 530),
+          new Vector2(760, 530)
+        ),
       ],
       visibility: null,
     };
     this.view = new GameView(this);
+    this.drawRocks = true;
   }
 
   run() {

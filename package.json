@@ -7,7 +7,9 @@
     "start": "parcel index.html --open",
     "build": "parcel build index.html -d public"
   },
-  "dependencies": {},
+  "dependencies": {
+    "dat.gui": "^0.7.7"
+  },
   "devDependencies": {
     "@babel/core": "7.2.0",
     "@babel/plugin-proposal-class-properties": "^7.8.3",

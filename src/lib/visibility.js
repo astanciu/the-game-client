@@ -1,6 +1,8 @@
 // Code here was inspired by https://www.redblobgames.com/articles/visibility/
 // and parts were originally written by https://ncase.me/sight-and-light/
 
+import { Vector2 } from './gamelib/math/Vector2';
+
 function getIntersection(ray, segment) {
   var r_px = ray.a.x;
   var r_py = ray.a.y;
@@ -61,20 +63,18 @@ function getClosesIntersection(angle, { x, y }, segs) {
   return closestIntersect;
 }
 
-function getSightPolygon(playerX, playerY, segs, playerAngle) {
-  let a1 = playerAngle - 0.5;
-  let a2 = playerAngle + 0.5;
-
-  // p = 0.1
-  // a1 = -.4
-  // a1 = Max 
+function getSightPolygon(playerX, playerY, segs, world) {
+  const playerAngle = world.player.angle;
+  const coneStart = world.player.loc;
+  const coneAngle = world.player.coneAngle || 0.5;
+  let a1 = playerAngle - coneAngle;
+  let a2 = playerAngle + coneAngle;
 
   if (a1 < 0) a1 = 2 * Math.PI + a1;
   if (a2 > 2 * Math.PI) a2 = a2 - 2 * Math.PI;
-  // console.log(`a1: ${a1} ---- mouse: ${playerAngle} ----- a2:${a2}`);
 
-  const p1 = new Vector(playerX * Math.cos(a1), playerY * Math.sin(a1));
-  const p2 = new Vector(playerX * Math.cos(a2), playerY * Math.sin(a2));
+  const p1 = new Vector2(playerX * Math.cos(a1), playerY * Math.sin(a1));
+  const p2 = new Vector2(playerX * Math.cos(a2), playerY * Math.sin(a2));
   // Get all unique points
   var points = (function (segments) {
     var a = [];
@@ -83,7 +83,6 @@ function getSightPolygon(playerX, playerY, segs, playerAngle) {
     });
     return a;
   })(segs);
-
   points.push(p1, p2);
 
   var uniquePoints = (function (points) {
@@ -134,7 +133,6 @@ function getSightPolygon(playerX, playerY, segs, playerAngle) {
     return a.angle - b.angle;
   });
 
-  console.log(`player: ${playerAngle}  a1: ${a1},  a2: ${a2}`);
   intersects = intersects.filter((p) => {
     if (a2 > a1) {
       return p.angle >= a1 && p.angle <= a2;
@@ -151,7 +149,8 @@ function getSightPolygon(playerX, playerY, segs, playerAngle) {
 
   const left = getClosesIntersection(a1, { x: playerX, y: playerY }, segs);
   const right = getClosesIntersection(a2, { x: playerX, y: playerY }, segs);
-  const center = { x: playerX, y: playerY };
+  // const center = { x: playerX, y: playerY };
+  const center = coneStart;
   intersects = [center, left, ...intersects, right];
 
   return intersects;
@@ -159,14 +158,24 @@ function getSightPolygon(playerX, playerY, segs, playerAngle) {
 
 export const getVisibility = (world) => {
   const { loc } = world.player;
-  const segments = world.segments;
+
+  let segments = [...world.room.getSegments()];
+
+  world.shapes.forEach((shape) => segments.push(...shape.getSegments()));
+
   var fuzzyRadius = 10;
 
   var angle = world.player.angle;
-  var polygons = [
-    // getSightPolygon(loc.x + dx, loc.y + dy, segments),
-    getSightPolygon(loc.x, loc.y, segments, angle),
-  ];
+  var polygons = [getSightPolygon(loc.x, loc.y, segments, world)];
+  for (
+    var tempAngle = 0;
+    tempAngle < Math.PI * 2;
+    tempAngle += (Math.PI * 2) / 6
+  ) {
+    var dx = Math.cos(tempAngle) * fuzzyRadius;
+    var dy = Math.sin(tempAngle) * fuzzyRadius;
+    polygons.push(getSightPolygon(loc.x + dx, loc.y + dy, segments, world));
+  }
 
   return polygons;
 };
